@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import dbus from '@homebridge/dbus-native'
 
 export default function handler(req, res) {
@@ -14,10 +13,10 @@ export default function handler(req, res) {
       interface: 'org.next.turnip.builder',
       member: 'reverse',
       signature: 's',
-      body: ['start build']
+      body: ['BUILD_START']
     });
 
   bus.connection.on('message', function(msg){
-    console.log(msg);
+    console.log(msg.body);
   })
 }
