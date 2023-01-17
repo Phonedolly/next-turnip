@@ -1,0 +1,19 @@
+.common-input {
+  height: 2.5em;
+  font-size: 1em;
+  border: none;
+  padding: 0 0.75em;
+
+  border-radius: 7px;
+  background-color: rgba(255, 255, 255, 0.65);
+  @media (prefers-color-scheme: dark) {
+    background-color: rgba(30, 30, 30, 0.5);
+    color: white;
+  }
+  outline: 1px solid rgb(200, 200, 200);
+  resize: none;
+  margin: 0.25em 0;
+}
+.common-input:focus {
+  outline: 2.5px solid #116dd4;
+}

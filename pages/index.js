@@ -1,11 +1,13 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '@/styles/Home.module.css'
+import styles from '@/styles/Home.module.scss'
+import Card from '@/component/Card'
+import Header from '@/component/Header'
 
-const inter = Inter({ subsets: ['latin'] })
+import mongoose from 'mongoose';
+const Category = require('@/schemas/category');
+import Post from '@/schemas/post';
 
-export default function Home() {
+export default function Home(props) {
   return (
     <>
       <Head>
@@ -14,110 +16,45 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.js</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
-
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
+      <main>
+        <Header categories={props.categories} />
+        <div className={styles.cardContainer}>
+          <Card
+            title="카드 테스트"
+            thumbnail={undefined}
+            url={"/post/"}
+            postDate={"2022"}
+            key={undefined}
+            mode="curator"
           />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
-            />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
         </div>
       </main>
     </>
   )
+}
+
+export async function getStaticProps() {
+  mongoose.set('strictQuery', false);
+  await mongoose.connect(process.env.MONGODB_URI, { dbName: process.env.MONGODB_DBNAME, useNewUrlParser: true, })
+    .then(result => console.log("connected to mongodb!"))
+    .catch(err => console.error(err));
+
+  const rawCategories = await Category.find({}).sort({ index: 1 });
+  const lengths = await Promise.all(rawCategories.map(async (eachCategory) => {
+    const value = (await Post.find({ category: { _id: eachCategory._id.toString() } })).length
+    return value;
+  }))
+
+  const categories = (await rawCategories.map((eachCategory, i) => ({
+    index: eachCategory.index,
+    categoryName: eachCategory.categoryName,
+    categoryURL: eachCategory.categoryURL,
+    numsOfPosts: lengths[i]
+  })));
+
+  return {
+    props: {
+      categories,
+    }
+  }
 }

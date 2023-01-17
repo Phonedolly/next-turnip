@@ -1,0 +1,71 @@
+// @import url("./Variable.scss");
+// @import url("./Color.scss");
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  // backdrop-filter: saturate(180%) blur(70px);
+}
+
+.modal > section > header {
+  font-weight: bold;
+  font-size: 1.25em;
+  margin-bottom: 0.5em;
+  @media (prefers-color-scheme: dark) {
+    color: white;
+  }
+}
+
+.modal > section > p {
+  @media (prefers-color-scheme: dark) {
+    color: white;
+  }
+}
+
+.modal > section > .search-result-list {
+  max-height: 50vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.item {
+  // background-color: rgba(255, 255, 255, 0.6);
+
+  p {
+    padding-left: 1em;
+  }
+  img {
+    height: 4em;
+    width: 7em;
+    object-fit: cover;
+    border-radius: 13px;
+  }
+}
+
+.modal > section > button {
+  margin-top: 1.5em;
+  padding: 0.5em 1em 0.5em 1em;
+  font-size: 1em;
+  align-self: flex-end;
+  border: none;
+  border-radius: 13px;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #30363d;
+    color: white;
+  }
+}
+
+.modal > section > button:hover {
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--gray-900);
+  }
+}

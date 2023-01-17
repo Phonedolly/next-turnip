@@ -1,0 +1,154 @@
+// @import url("./Font.scss");
+// @import url("./Variable.scss");
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 2.3em;
+  z-index: 999;
+
+  background-color: rgba(255, 255, 255, 0.7);
+  @media (prefers-color-scheme: dark) {
+    background-color: rgba(13, 17, 23, 0.8);
+  }
+
+  font-size: 1.4em;
+
+  @media (min-width: 480px) {
+    font-size: 2em;
+    height: 2.4em;
+  }
+
+  @media (min-width: 768px) {
+    // font-size: 3em;
+    height: 2.5em;
+  }
+
+  @media (min-width: 1024px) {
+  }
+  @media (min-width: 1200px) {
+  }
+  @media (min-width: 1850px) {
+  }
+
+  .header-content {
+    display: flex;
+    flex-direction: row;
+
+    justify-content: space-between;
+    align-items: center;
+    width: 90vw;
+    // font-family: "Spoqa Han Sans Neo";
+
+    @media (min-width: 480px) {
+      font-size: 0.9em;
+    }
+    @media (min-width: 768px) {
+      font-size: 1.1em;
+    }
+
+    @media (min-width: 1024px) {
+      max-width: 60rem;
+    }
+    @media (min-width: 1200px) {
+      max-width: 61rem;
+    }
+    @media (min-width: 1850px) {
+      max-width: var(--header-width);
+    }
+
+    .header-link {
+      text-decoration-line: none;
+    }
+
+    .header-text {
+      font-weight: bold;
+      color: black;
+      @media (prefers-color-scheme: dark) {
+        color: white;
+      }
+    }
+    .underline {    
+      width: 0.4em;
+      height: 0.4em;
+      background-color: red;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: row;
+      align-self: center;
+
+      .menu-categories-explicitly {
+        display: none;
+        @media (min-width: 1024px) {
+          display: flex;
+        }
+        flex-direction: row;
+        justify-content: flex-end;
+
+        .menu-category {
+          font-size: 0.65em;
+          font-weight: bold;
+          align-self: center;
+          margin: auto 0.1em;
+          padding: 0.3em 0.4em;
+          border-radius: 13px;
+
+          @media (min-width: 480px) {
+            margin: auto 1em;
+          }
+
+          cursor: pointer;
+          .menu-category-link {
+            text-decoration-line: none;
+            color: black;
+            @media (prefers-color-scheme: dark) {
+              color: white;
+            }
+          }
+        }
+        .menu-category:last-child {
+          margin: auto 1em auto 0.5em;
+          @media (min-width: 480px) {
+            margin: auto 1em auto 1em;
+          }
+        }
+      }
+
+      .menu-icons {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .category-icon {
+          @media (min-width: 1024px) {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.menu-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 2.3em;
+  width: 1em;
+  border: none;
+  background-color: transparent;
+  // margin-left: 0.5em;
+  // margin-right: 0.5em;
+  @media (min-width: 480px) {
+    height: 3em;
+    width: 3em;
+    margin-left: 1em;
+    margin-right: 1em;
+  }
+}
+
+.not-visible-header {
+  display: none;
+}
