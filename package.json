@@ -24,6 +24,13 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.7.1",
+    "react-katex": "^3.0.1",
+    "react-markdown": "^8.0.5",
+    "react-syntax-highlighter": "^15.5.0",
+    "react-twitter-embed": "^4.0.4",
+    "rehype-raw": "^6.1.1",
+    "remark-gfm": "^3.0.1",
+    "remark-math": "^5.1.1",
     "sass": "^1.57.1",
     "sharp": "^0.31.3",
     "uuid": "^9.0.0"

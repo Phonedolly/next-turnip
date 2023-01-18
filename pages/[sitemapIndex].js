@@ -1,7 +1,7 @@
 import Head from 'next/head'
 
 import getAllCategories from '@/lib/getAllCategories'
-import { getAllPosts, getPostsOnFirstPage, getSitemapIndicesAfterFirstPage } from '@/lib/getSitemap'
+import { getAllPosts, getSitemapIndicesAfterFirstPage } from '@/lib/getSitemap'
 
 import Header from '@/component/Header'
 import Sitemap from '@/component/Sitemap'
@@ -25,7 +25,7 @@ export default function OtherHome(props) {
 
 export async function getStaticPaths() {
   const sitemapIndices = await getSitemapIndicesAfterFirstPage();
-  
+
   return {
     paths: sitemapIndices,
     fallback: false,

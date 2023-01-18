@@ -7,7 +7,6 @@ import Footer from "./Footer";
 import styles from '@/styles/Sitemap.module.scss'
 
 export default function Sitemap(props) {
-  console.log(props);
   const router = useRouter();
   return (
     <div className={styles['main-container']}>
@@ -18,7 +17,7 @@ export default function Sitemap(props) {
               title={each.title}
               thumbnail={each.thumbnailURL}
               url={"/post/" + each.postURL}
-              postDate={each.postDate}
+              postDate={each.createdAt}
               key={each.title}
               mode="curator"
             />
