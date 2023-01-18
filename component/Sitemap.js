@@ -1,3 +1,5 @@
+import { useRouter } from "next/router";
+
 import Card from "./Card";
 import CommonButton from "./CommonButton";
 import Footer from "./Footer";
@@ -5,6 +7,8 @@ import Footer from "./Footer";
 import styles from '@/styles/Sitemap.module.scss'
 
 export default function Sitemap(props) {
+  console.log(props);
+  const router = useRouter();
   return (
     <div className={styles['main-container']}>
       <div className={styles['card-container']}>
@@ -21,18 +25,32 @@ export default function Sitemap(props) {
           );
         })}
       </div>
-      {(props.canLoadMoreSitemap === true) && (
-        <div className={styles["buttom-navigator"]}>
+
+      <div className={styles["buttom-navigator"]}>
+        {props.sitemapIndex > 0 ?
+          <CommonButton
+            style={{ marginTop: "2em" }}
+            onClick={() => {
+              if (props.sitemapIndex === 1) {
+                router.push('/');
+              }
+              else {
+                router.push(`/${props.sitemapIndex - 1}`);
+              }
+            }}
+          >이전</CommonButton> : null
+        }
+        {props.canLoadMoreSitemap === true ?
           <CommonButton
             onClick={() => {
-
+              router.push(`/${props.sitemapIndex + 1}`);
             }}
             style={{ marginTop: "2em" }}
           >
             다음
           </CommonButton>
-        </div>
-      )}
+          : null}
+      </div>
       <Footer />
     </div>
   )

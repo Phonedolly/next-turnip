@@ -1,7 +1,7 @@
 import Head from 'next/head'
 
 import getAllCategories from '@/lib/getAllCategories'
-import { getPostsOnFirstPage } from '@/lib/getSitemap'
+import { getAllPosts } from '@/lib/getSitemap'
 
 import Header from '@/component/Header'
 import Sitemap from '@/component/Sitemap'
@@ -24,14 +24,15 @@ export default function Home(props) {
 }
 
 
-export async function getStaticProps(context) {
-
+export async function getStaticProps() {
   const categories = await getAllCategories();
-  const { posts, canLoadMoreSitemap } = await getPostsOnFirstPage();
+  const { posts, canLoadMoreSitemap } = await getAllPosts(0);
+
   return {
     props: {
       categories,
       posts,
+      sitemapIndex: 0,
       canLoadMoreSitemap
     }
   }
