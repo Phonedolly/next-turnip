@@ -1,5 +1,5 @@
-// @import url("./Font.scss");
-// @import url("./Variable.scss");
+@import "./Variable.scss";
+
 .header {
   display: flex;
   flex-direction: row;
@@ -55,7 +55,7 @@
       max-width: 61rem;
     }
     @media (min-width: 1850px) {
-      max-width: var(--header-width);
+      max-width: $document-width-desktop;
     }
 
     .header-link {

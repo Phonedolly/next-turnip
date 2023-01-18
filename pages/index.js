@@ -2,10 +2,9 @@ import Head from 'next/head'
 import styles from '@/styles/Home.module.scss'
 import Card from '@/component/Card'
 import Header from '@/component/Header'
+import getAllCategories from '@/lib/getAllCategories'
+import { getPostsOnFirstPage } from '@/lib/getSitemap'
 
-import mongoose from 'mongoose';
-const Category = require('@/schemas/category');
-import Post from '@/schemas/post';
 
 export default function Home(props) {
   return (
@@ -18,43 +17,35 @@ export default function Home(props) {
       </Head>
       <main>
         <Header categories={props.categories} />
-        <div className={styles.cardContainer}>
-          <Card
-            title="카드 테스트"
-            thumbnail={undefined}
-            url={"/post/"}
-            postDate={"2022"}
-            key={undefined}
-            mode="curator"
-          />
+        <div className={styles['card-container']}>
+          {props.posts.map((each) => {
+            return (
+              <Card
+                title={each.title}
+                thumbnail={each.thumbnailURL}
+                url={"/post/" + each.postURL}
+                postDate={each.postDate}
+                key={each.title}
+                mode="curator"
+              />
+            );
+          })}
         </div>
       </main>
     </>
   )
 }
 
-export async function getStaticProps() {
-  mongoose.set('strictQuery', false);
-  await mongoose.connect(process.env.MONGODB_URI, { dbName: process.env.MONGODB_DBNAME, useNewUrlParser: true, })
-    .then(result => console.log("connected to mongodb!"))
-    .catch(err => console.error(err));
 
-  const rawCategories = await Category.find({}).sort({ index: 1 });
-  const lengths = await Promise.all(rawCategories.map(async (eachCategory) => {
-    const value = (await Post.find({ category: { _id: eachCategory._id.toString() } })).length
-    return value;
-  }))
+export async function getStaticProps(context) {
 
-  const categories = (await rawCategories.map((eachCategory, i) => ({
-    index: eachCategory.index,
-    categoryName: eachCategory.categoryName,
-    categoryURL: eachCategory.categoryURL,
-    numsOfPosts: lengths[i]
-  })));
-
+  const categories = await getAllCategories();
+  const { posts, canLoadMoreSitemap } = await getPostsOnFirstPage();
   return {
     props: {
       categories,
+      posts,
+      canLoadMoreSitemap
     }
   }
 }

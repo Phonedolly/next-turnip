@@ -6,16 +6,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 6rem;
-  min-height: 100vh;
+  max-width: $document-width-desktop;
 }
 
-.cardContainer {
+.card-container {
   display: grid;
   padding: 1em 5vw;
   column-gap: 3.5em;
   row-gap: 3em;
   margin: 0 auto;
-  max-width: var(--document-width-desktop);
+  max-width: $document-width-desktop;
 
   text-decoration-line: none;
   grid-template-columns: 1fr;
@@ -29,8 +29,10 @@
   }
   @media (min-width: 1200px) {
     grid-template-columns: 1fr 1fr;
+    max-width: 61rem;
   }
   @media (min-width: 1850px) {
+    max-width: $document-width-desktop;
   }
 }
 .buttom-navigator {

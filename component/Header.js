@@ -1,23 +1,17 @@
-import getCategories from "@/lib/getCategories";
-
 import Flex from "@react-css/flex";
 import Link from "next/link";
-import axios from 'axios'
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import { useEffect, useLayoutEffect } from "react";
+import { useState } from "react";
+import { MdMenu, MdSearch } from 'react-icons/md'
 
 import styles from "@/styles/Header.module.scss";
-import { useState } from "react";
 import SearchModal from "@/component/SearchModal";
 import CategoryModal from "@/component/CategoryModal";
-import Image from "next/image";
 
-import searchIcon from "@/public/search_black_24dp.svg";
-import categoryIcon from "@/public/menu_FILL0_wght400_GRAD0_opsz48.svg"
 
-import { MdMenu, MdSearch } from 'react-icons/md'
 
 export default function Header(props) {
   const router = useRouter();
@@ -109,7 +103,7 @@ export default function Header(props) {
                     whileTap={{ scale: 1.0 }}
                   >
                     <Link
-                      href={`/category/${eachMenu.categoryLink}`}
+                      href={`/category/${eachMenu.categoryURL}`}
                       className={styles["menu-category-link"]}
                     >
                       {eachMenu.categoryName}
