@@ -1,6 +1,6 @@
 import Flex from "@react-css/flex";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useAnimationControls } from "framer-motion";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/router";
 import { useEffect, useLayoutEffect } from "react";
@@ -15,11 +15,17 @@ import CategoryModal from "@/component/CategoryModal";
 
 export default function Header(props) {
   const router = useRouter();
-  const [numsOfPosts, setNumsOfPosts] = useState([]);
   const [headerClassName, setHeaderClassName] = useState("");
 
   const [isSearchModalOpen, setSearchModalOpen] = useState(false);
   const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
+
+  // const numOfPostsAnimationControls = () => {
+  //   let controls = [];
+  //   for (let i = 0; i < props.categories.length; i++) {
+  //     controls.push(useAnimationControls());
+  //   }
+  // }
 
   const openSearchModal = () => {
     sessionStorage.setItem("scrollYWhenModal", window.scrollY);
@@ -75,7 +81,7 @@ export default function Header(props) {
   // }, []);
   return (
     <>
-      <div className={styles['header']}>
+      <div className={`${styles['header']} ${styles['scroll']}`}>
         <div className={styles['header-content']}>
           <Link href="/" className={styles['header-link']}>
             <Flex flexDirection="row" justifyContent="start" className={styles["icon"]}>
@@ -97,8 +103,9 @@ export default function Header(props) {
                     className={styles["menu-category"]}
                     key={uuidv4()}
                     whileHover={{
-                      transition: { ease: "linear", duration: 0.2 },
-                      scale: 1.2,
+                      transition: { duration: 0.15 },
+                      scale: 1.05,
+                      backgroundColor: "rgba(0,0,0,0.1)"
                     }}
                     whileTap={{ scale: 1.0 }}
                   >
@@ -119,14 +126,14 @@ export default function Header(props) {
                 whileHover={{ scale: 1.5 }}
                 whileTap={{ scale: 1.0 }}
                 onClick={openSearchModal}
-              ><MdSearch size="3em"/></motion.button>
+              ><MdSearch size="3em" /></motion.button>
               <motion.button
                 className={`${styles['menu-icon']} ${styles['category-icon']}`}
                 whileHover={{ scale: 1.5 }}
                 whileTap={{ scale: 1.0 }}
                 onClick={openCategoryModal}
               >
-                <MdMenu size="3em"/>
+                <MdMenu size="3em" />
               </motion.button>
             </div>
           </div>
@@ -136,7 +143,6 @@ export default function Header(props) {
         isModalOpen={isCategoryModalOpen}
         closeModal={closeCategoryModal}
         categories={props.categories}
-        numsOfPosts={numsOfPosts}
       />
       <SearchModal
         isModalOpen={isSearchModalOpen}

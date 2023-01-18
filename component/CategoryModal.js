@@ -59,7 +59,7 @@ export default function CategoryModal({
                     {/* <img src={eachCategory.thumbnailURL} /> */}
                     <p className={categoryModalStyles["category-name"]}>{eachCategory.categoryName}</p>
                     <p className={categoryModalStyles["nums-of-posts"]}>
-                      {eachCategory.numsOfPosts}개 포스트
+                      {eachCategory.numOfPosts}개 포스트
                     </p>
                   </motion.li>
                 ))}

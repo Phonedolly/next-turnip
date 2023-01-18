@@ -3,14 +3,8 @@ import Head from 'next/head'
 import getAllCategories from '@/lib/getAllCategories'
 import { getPostsOnFirstPage } from '@/lib/getSitemap'
 
-import Card from '@/component/Card'
-import CommonButton from '@/component/CommonButton'
 import Header from '@/component/Header'
-import Footer from '@/component/Footer'
-
-
-import styles from '@/styles/Home.module.scss'
-
+import Sitemap from '@/component/Sitemap'
 
 export default function Home(props) {
   return (
@@ -23,35 +17,7 @@ export default function Home(props) {
       </Head>
       <main>
         <Header categories={props.categories} />
-        <div className={styles['main-container']}>
-          <div className={styles['card-container']}>
-            {props.posts.map((each) => {
-              return (
-                <Card
-                  title={each.title}
-                  thumbnail={each.thumbnailURL}
-                  url={"/post/" + each.postURL}
-                  postDate={each.postDate}
-                  key={each.title}
-                  mode="curator"
-                />
-              );
-            })}
-          </div>
-          {(props.canLoadMoreSitemap === true) && (
-            <div className={styles["buttom-navigator"]}>
-              <CommonButton
-                onClick={() => {
-
-                }}
-                style={{ marginTop: "2em" }}
-              >
-                다음
-              </CommonButton>
-            </div>
-          )}
-          <Footer />
-        </div>
+        <Sitemap {...props} />
       </main>
     </>
   )
