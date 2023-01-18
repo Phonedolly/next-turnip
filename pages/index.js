@@ -6,6 +6,7 @@ import { getPostsOnFirstPage } from '@/lib/getSitemap'
 import Card from '@/component/Card'
 import CommonButton from '@/component/CommonButton'
 import Header from '@/component/Header'
+import Footer from '@/component/Footer'
 
 
 import styles from '@/styles/Home.module.scss'
@@ -49,6 +50,7 @@ export default function Home(props) {
               </CommonButton>
             </div>
           )}
+          <Footer />
         </div>
       </main>
     </>
