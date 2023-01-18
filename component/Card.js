@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { motion } from 'framer-motion'
 
 import styles from "@/styles/Card.module.scss";
-import probe from 'probe-image-size';
 
 
 export default async function Card(props) {
