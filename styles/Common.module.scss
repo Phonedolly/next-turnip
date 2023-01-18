@@ -11,8 +11,9 @@
   align-self: center;
   border: none;
   border-radius: 13px;
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 1px 4px 0px;
+  box-shadow: rgba(0, 0, 0, 0.20) 0px 4px 20px 0px;
   cursor: pointer;
+  background-color: white;
   @media (prefers-color-scheme: dark) {
     background-color: #30363d;
     color: white;

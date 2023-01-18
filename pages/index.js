@@ -1,9 +1,14 @@
 import Head from 'next/head'
-import styles from '@/styles/Home.module.scss'
-import Card from '@/component/Card'
-import Header from '@/component/Header'
+
 import getAllCategories from '@/lib/getAllCategories'
 import { getPostsOnFirstPage } from '@/lib/getSitemap'
+
+import Card from '@/component/Card'
+import CommonButton from '@/component/CommonButton'
+import Header from '@/component/Header'
+
+
+import styles from '@/styles/Home.module.scss'
 
 
 export default function Home(props) {
@@ -17,19 +22,33 @@ export default function Home(props) {
       </Head>
       <main>
         <Header categories={props.categories} />
-        <div className={styles['card-container']}>
-          {props.posts.map((each) => {
-            return (
-              <Card
-                title={each.title}
-                thumbnail={each.thumbnailURL}
-                url={"/post/" + each.postURL}
-                postDate={each.postDate}
-                key={each.title}
-                mode="curator"
-              />
-            );
-          })}
+        <div className={styles['main-container']}>
+          <div className={styles['card-container']}>
+            {props.posts.map((each) => {
+              return (
+                <Card
+                  title={each.title}
+                  thumbnail={each.thumbnailURL}
+                  url={"/post/" + each.postURL}
+                  postDate={each.postDate}
+                  key={each.title}
+                  mode="curator"
+                />
+              );
+            })}
+          </div>
+          {(props.canLoadMoreSitemap === true) && (
+            <div className={styles["buttom-navigator"]}>
+              <CommonButton
+                onClick={() => {
+
+                }}
+                style={{ marginTop: "2em" }}
+              >
+                다음
+              </CommonButton>
+            </div>
+          )}
         </div>
       </main>
     </>
