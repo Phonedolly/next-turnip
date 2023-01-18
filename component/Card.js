@@ -28,7 +28,7 @@ export default function Card(props) {
 
         </motion.div>
       ) : (
-         <motion.div className={styles.box}
+        <motion.div className={styles.box}
           whileHover={{ scale: 1.02, boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 16px 0px" }}
           transition={{ duration: 0.225 }}
         >
