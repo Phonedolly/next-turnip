@@ -25,7 +25,7 @@ export default function OtherHome(props) {
 
 export async function getStaticPaths() {
   const sitemapIndices = await getSitemapIndicesAfterFirstPage();
-  console.log(sitemapIndices)
+  
   return {
     paths: sitemapIndices,
     fallback: false,
