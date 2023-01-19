@@ -1,4 +1,6 @@
 import Head from 'next/head'
+import stringUrlExtractor from 'string-url-extractor';
+import getImageSize from 'image-size-from-url';
 
 import getAllCategories from '@/lib/getAllCategories'
 import { getPost, getPostsStaticPaths } from '@/lib/getPost'
@@ -23,7 +25,7 @@ export default function Post(props) {
       <main>
         <Header categories={props.categories} />
         <div className={outlineStyles['main-container']}>
-          <Markdown md={props.post} />
+          <Markdown {...props.post} />
           {/* {isLoggedIn === "YES" && (
             <div className={styles["edit-button-container"]}>
               <CommonButton
@@ -53,11 +55,39 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
+  const formats = ["jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "apng", "gif", "webp", "avif", "ico", "tiff", "svg", "bmp", ,];
+
   const post = await getPost(context.params.postURL);
   const categories = await getAllCategories();
+  const initialValue = [];
+  const imageLinks = await stringUrlExtractor(post.content)
+    .reduce(async (prev, cur) => {
+      const prevResult = await prev.then();
+
+      let isImageUrl = false;
+      formats.forEach(eachFormat => {
+        if (cur.toLowerCase().slice(cur.lastIndexOf(".") + 1) === eachFormat) {
+          isImageUrl = true;
+        }
+      })
+
+      if (isImageUrl === true) {
+        const properties = await getImageSize(cur);
+        prevResult.push({ src: cur, properties });
+      }
+
+      return Promise.resolve(prevResult);
+    }, Promise.resolve([]))
   return {
     props: {
-      post,
+      post: {
+        imageSizes: imageLinks.reduce(
+          (prev, cur) => {
+            prev[cur.src] = cur.properties
+            return prev;
+          }, {}),
+        ...post
+      },
       categories
     }
   }

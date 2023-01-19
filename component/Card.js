@@ -5,17 +5,7 @@ import { motion } from 'framer-motion'
 import styles from "@/styles/Card.module.scss";
 
 
-export default async function Card(props) {
-  let width, height;
-  if (props.mode === "curator") {
-    const properties = await probe(props.thumbnail);
-  }
-  else {
-    const properties = await probe(props.ogThumbnail);
-  }
-  width = properties.width;
-  height = properties.height;
-
+export default function Card(props) {
   return (
     <>
       {props.mode === "curator" ? (
@@ -28,8 +18,8 @@ export default async function Card(props) {
               src={props.thumbnail || "/nothing.jpg"}
               alt="썸네일"
               className={styles.thumb}
-              width={width}
-              height={height}
+              width={500}
+              height={300}
               priority
             />
             <h2 className={styles.title}>{props.title}</h2>

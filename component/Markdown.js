@@ -15,14 +15,13 @@ import markdownStyles from "@/styles/GitHubMarkdownToMe.module.scss";
 import postStyles from '@/styles/Post.module.scss';
 
 import Card from "@/component/Card";
-import probe from "probe-image-size";
 
 export default function Markdown(articleProps) {
   /*
   https://www.joshwcomeau.com/react/the-perils-of-rehydration/#the-solution
   */
   const [hasMounted, setHasMounted] = useState(false);
-
+  console.log(articleProps.imageSizes);
   useEffect(() => {
     setHasMounted(true);
   }, []);
@@ -40,7 +39,7 @@ export default function Markdown(articleProps) {
           return (
             <div className={postStyles["art-hero"]}>
               <h1 className={postStyles["art-hero-title"]} {...props}>{children}</h1>
-              <p className={postStyles["art-hero-date"]}>{articleProps.md.createdAt}</p>
+              <p className={postStyles["art-hero-date"]}>{articleProps.createdAt}</p>
             </div>
           );
         },
@@ -89,16 +88,16 @@ export default function Markdown(articleProps) {
               </p>
             );
           } else if (node.children[0].tagName === "img") {
-            const image = node.children[0]
-            const metastring = image.properties.alt
-            const alt = metastring?.replace(/ *\{[^)]*\} */g, "")
-            const metaWidth = metastring?.match(/{([^}]+)x/)
-            const metaHeight = metastring?.match(/x([^}]+)}/)
-            const width = metaWidth ? metaWidth[1] : "768"
-            const height = metaHeight ? metaHeight[1] : "432"
-            const isPriority = metastring?.toLowerCase().match('{priority}')
-            const hasCaption = metastring?.toLowerCase().includes('{caption:')
-            const caption = metastring?.match(/{caption: (.*?)}/)?.pop()
+            const image = node.children[0];
+            const metastring = image.properties.alt;
+            const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
+            const metaWidth = metastring?.match(/{([^}]+)x/);
+            const metaHeight = metastring?.match(/x([^}]+)}/);
+            const width = metaWidth ? metaWidth[1] : articleProps.imageSizes[`${image.properties.src}`].width
+            const height = metaHeight ? metaHeight[1] : articleProps.imageSizes[`${image.properties.src}`].height;
+            const isPriority = metastring?.toLowerCase().match('{priority}');
+            const hasCaption = metastring?.toLowerCase().includes('{caption:');
+            const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
 
             return (
               <div className="postImgWrapper">
@@ -121,23 +120,20 @@ export default function Markdown(articleProps) {
             );
           }
         },
-        img: async (props) => {
-          const image = props.node;
+        img: ({ className, children, node, ...props }) => {
+          const image = node;
           console.log(image);
-
-          const metastring = image.properties.alt
-          const alt = metastring?.replace(/ *\{[^)]*\} */g, "")
-          // const metaWidth = metastring?.match(/{([^}]+)x/)
-          // const metaHeight = metastring?.match(/x([^}]+)}/)
-          // const width = metaWidth ? metaWidth[1] : "768"
-          // const height = metaHeight ? metaHeight[1] : "432"
-          const { width, height } = await probe(image.properties.src);
-          const isPriority = metastring?.toLowerCase().match('{priority}')
-          const hasCaption = metastring?.toLowerCase().includes('{caption:')
-          const caption = metastring?.match(/{caption: (.*?)}/)?.pop()
+          const metastring = image.properties.alt;
+          const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
+          const metaWidth = metastring?.match(/{([^}]+)x/);
+          const metaHeight = metastring?.match(/x([^}]+)}/);
+          const width = metaWidth ? metaWidth[1] : articleProps.imageSizes[`${image.properties.src}`].width
+          const height = metaHeight ? metaHeight[1] : articleProps.imageSizes[`${image.properties.src}`].height;
+          const isPriority = metastring?.toLowerCase().match('{priority}');
+          const hasCaption = metastring?.toLowerCase().includes('{caption:');
+          const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
 
           return (
-            <div className="postImgWrapper">
               <Image
                 src={image.properties.src}
                 width={width}
@@ -145,10 +141,12 @@ export default function Markdown(articleProps) {
                 className="postImg"
                 alt={alt}
                 priority={isPriority}
-                style={{ overflowX: "scroll" }}
+              // fill
+              // sizes="(max-width: 768px) 100vw,
+              // (max-width: 1200px) 50vw,
+              // 33vw"
+              // style={{ overflowX: "scroll", objectFit:"contain" }}
               />
-              {hasCaption ? <div className="caption" aria-label={caption}>{caption}</div> : null}
-            </div>
           )
         },
         span: ({ className, children, ...props }) => {
@@ -239,6 +237,6 @@ export default function Markdown(articleProps) {
           }
         },
       }}
-    >{articleProps.md.content}</ReactMarkDown>
+    >{articleProps.content}</ReactMarkDown>
   );
 };
