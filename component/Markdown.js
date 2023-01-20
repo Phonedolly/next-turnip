@@ -100,7 +100,7 @@ export default function Markdown(articleProps) {
             const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
 
             return (
-              <div className="postImgWrapper">
+              <div className={postStyles["post-image-wrapper"]}>
                 <Image
                   src={image.properties.src}
                   width={width}
@@ -134,6 +134,7 @@ export default function Markdown(articleProps) {
           const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
 
           return (
+            <div className="post-image-wrapper">
               <Image
                 src={image.properties.src}
                 width={width}
@@ -147,6 +148,8 @@ export default function Markdown(articleProps) {
               // 33vw"
               // style={{ overflowX: "scroll", objectFit:"contain" }}
               />
+              {hasCaption ? <div className="caption" aria-label={caption}>{caption}</div> : null}
+            </div>
           )
         },
         span: ({ className, children, ...props }) => {
