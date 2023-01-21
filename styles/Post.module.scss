@@ -43,8 +43,26 @@
   }
 }
 
-.post-image-wrapper{
+.post-image-wrapper {
   margin: 1em auto;
+}
+
+.post-image {
+  height: auto;
+}
+
+.image-viewer {
+  padding: 1em;
+}
+.slider-viewer {
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+}
+.picture-comment {
+  text-align: center;
+  font-size: 0.8em;
+  margin: auto 2em 1em 2em;
 }
 
 .edit-button-container {

@@ -4,7 +4,7 @@
   margin: 0 auto;
   border-radius: 13px;
   background-color: var(--gray-200);
-  box-shadow: rgba(0, 0, 0, 0.20) 0px 4px 20px 0px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 20px 0px;
 
   @media (prefers-color-scheme: dark) {
     background-color: #30363d;
@@ -92,16 +92,7 @@
     }
   }
 
-  .summary {
-    font-size: 0.95em;
-    padding-left: 1.3rem;
-    padding-right: 1.3rem;
-    word-break: 3;
-    color: black;
-  }
-
-  .postDate,
-  .ogLinkRepresentativeUrl {
+  .postDate {
     font-size: 0.75em;
     font-weight: bold;
     color: #6f7378;
@@ -127,6 +118,58 @@
   }
 }
 
-.forArticle {
+.box-in-post {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  // height: 100%;
+  max-width: 100%;
   margin: 1em auto;
+  border-radius: 13px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 20px 0px;
+  text-decoration: none !important;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #30363d;
+  }
+
+  .thumb-in-post {
+    // height: 100%;
+    width: 50rem;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-radius: 13px;
+  }
+  .text-area {
+    padding: 0.5em;
+  }
+
+  .title {
+    margin: 0.4em auto;
+    font-size: 1.2em;
+  }
+
+  .summary {
+    // display: block;
+    margin: 0.4em auto;
+    text-decoration: none;
+    font-size: 0.8em;
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+    // overflow: hidden;
+    // width:200px;
+    word-break: 3;
+    // text-overflow: ellipsis;
+    // white-space: nowrap;
+    color: black;
+  }
+
+  .ogLinkRepresentativeUrl {
+    font-size: 0.7em;
+    font-weight: bold;
+    color: #6f7378;
+    margin: 0.4em auto;
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+  }
 }

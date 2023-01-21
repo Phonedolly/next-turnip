@@ -21,7 +21,6 @@ export default function Markdown(articleProps) {
   https://www.joshwcomeau.com/react/the-perils-of-rehydration/#the-solution
   */
   const [hasMounted, setHasMounted] = useState(false);
-  console.log(articleProps.imageSizes);
   useEffect(() => {
     setHasMounted(true);
   }, []);
@@ -45,10 +44,10 @@ export default function Markdown(articleProps) {
         },
         div: ({ className, children, ...props }) => {
           if (className === "image-viewer") {
-            return <div className={markdownStyles.imageViewer}>{children}</div>;
+            return <div className={postStyles['image-viewer']}>{children}</div>;
           } else if (className === "slider-viewer") {
             return (
-              <div className={markdownStyles.sliderViewer}>{children}</div>
+              <div className={postStyles['slider-viewer']}>{children}</div>
             );
           } else if (className === "link-box") {
             return (
@@ -83,7 +82,7 @@ export default function Markdown(articleProps) {
         p: ({ className, children, node, ...props }) => {
           if (className === "picture-comment") {
             return (
-              <p className={markdownStyles.pictureComment} {...props}>
+              <p className={postStyles['picture-comment']} {...props}>
                 {children}
               </p>
             );
@@ -105,9 +104,8 @@ export default function Markdown(articleProps) {
                   src={image.properties.src}
                   width={width}
                   height={height}
-                  className="postImg"
+                  className={postStyles['post-image']}
                   alt={alt}
-                  priority={isPriority}
                 />
                 {hasCaption ? <div className="caption" aria-label={caption}>{caption}</div> : null}
               </div>
@@ -122,7 +120,6 @@ export default function Markdown(articleProps) {
         },
         img: ({ className, children, node, ...props }) => {
           const image = node;
-          console.log(image);
           const metastring = image.properties.alt;
           const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
           const metaWidth = metastring?.match(/{([^}]+)x/);
@@ -134,22 +131,21 @@ export default function Markdown(articleProps) {
           const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
 
           return (
-            <div className="post-image-wrapper">
+
               <Image
                 src={image.properties.src}
                 width={width}
                 height={height}
-                className="postImg"
+                className={postStyles['post-image']}
                 alt={alt}
-                priority={isPriority}
+                priority
               // fill
               // sizes="(max-width: 768px) 100vw,
               // (max-width: 1200px) 50vw,
               // 33vw"
               // style={{ overflowX: "scroll", objectFit:"contain" }}
               />
-              {hasCaption ? <div className="caption" aria-label={caption}>{caption}</div> : null}
-            </div>
+
           )
         },
         span: ({ className, children, ...props }) => {

@@ -64,7 +64,6 @@ export async function getStaticProps(context) {
 
   const imagesWithProperty = await Promise.all(
     post.images.map(async ({ imageLocation }) => {
-      console.log(imageLocation);
       return getImageSize(imageLocation)
         .then(properties => ({ src: imageLocation, properties }))
         .catch(err => {

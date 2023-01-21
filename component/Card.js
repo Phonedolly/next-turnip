@@ -6,6 +6,7 @@ import styles from "@/styles/Card.module.scss";
 
 
 export default function Card(props) {
+  console.log(props);
   return (
     <>
       {props.mode === "curator" ? (
@@ -25,34 +26,34 @@ export default function Card(props) {
             <h2 className={styles.title}>{props.title}</h2>
             <p className={styles.postDate}>{props.postDate}</p>
           </Link>
-
         </motion.div>
       ) : (
-        <motion.div className={styles.box}
+        <motion.a className={`${styles['box']} ${styles['box-in-post']}`}
           whileHover={{ scale: 1.02, boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 16px 0px" }}
           transition={{ duration: 0.225 }}
+          target="_blank" rel="noreferrer"
+          href={props.ogLinkURL}
         >
-          <a href={props.ogLinkURL} target="_blank" rel="noreferrer">
-            {props.ogThumbnail ? (
-              <Image
-                src={props.ogThumbnail ?? Nothing}
-                alt="썸네일"
-                className={styles.thumb}
-                width={props.thumbnailSize.width}
-                height={props.thumbnailSize.height}
-                priority
-              />
-            ) : (
-              <></>
-            )}
+          {/* {props.ogThumbnail ? (
+            <Image
+              src={props.ogThumbnail ?? Nothing}
+              alt="썸네일"
+              className={`${styles['thumb']} ${styles['thumb-in-post']}`}
+              width={500}
+              height={300}
+              priority
+            />
+          ) : (
+            null
+          )} */}
+          <div className={styles['text-area']}>
             <h2 className={styles.title}>{props.title}</h2>
             <p className={styles.summary}>{props.ogLinkSummary}</p>
             <p className={styles.ogLinkRepresentativeUrl}>
               {props.ogLinkRepresentativeUrl}
             </p>
-          </a>
-
-        </motion.div>
+          </div>
+        </motion.a>
       )}
     </>)
 }
