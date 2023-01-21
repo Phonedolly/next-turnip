@@ -57,31 +57,31 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   const formats = ["jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "apng", "gif", "webp", "avif", "ico", "tiff", "svg", "bmp", ,];
 
-  const post = await getPost(context.params.postURL);
-  const categories = await getAllCategories();
-  const initialValue = [];
-  const imageLinks = await stringUrlExtractor(post.content)
-    .reduce(async (prev, cur) => {
-      const prevResult = await prev.then();
+  const [post, categories] = await Promise.all([
+    getPost(context.params.postURL),
+    getAllCategories(),
+  ]);
 
-      let isImageUrl = false;
-      formats.forEach(eachFormat => {
-        if (cur.toLowerCase().slice(cur.lastIndexOf(".") + 1) === eachFormat) {
-          isImageUrl = true;
-        }
-      })
+  const imagesWithProperty = await Promise.all(
+    post.images.map(async ({ imageLocation }) => {
+      console.log(imageLocation);
+      return getImageSize(imageLocation)
+        .then(properties => ({ src: imageLocation, properties }))
+        .catch(err => {
+          console.error(`target image src: ${cur}`)
+          console.error(err);
 
-      if (isImageUrl === true) {
-        const properties = await getImageSize(cur);
-        prevResult.push({ src: cur, properties });
-      }
+          return {
+            src: imageLocation,
+            properties: undefined
+          }
+        })
+    }))
 
-      return Promise.resolve(prevResult);
-    }, Promise.resolve([]))
   return {
     props: {
       post: {
-        imageSizes: imageLinks.reduce(
+        imageSizes: imagesWithProperty.reduce(
           (prev, cur) => {
             prev[cur.src] = cur.properties
             return prev;

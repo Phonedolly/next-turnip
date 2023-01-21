@@ -1,49 +1,57 @@
 import axios from "axios";
 import { useState } from "react";
-import { useRouter } from "next/router";
-import { useUser } from "@/lib/client/login";
-import { onSilentRefresh, onLoginSuccess, onGetAuth } from "../Util/LoginTools";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
+import useSWR from 'swr';
 
-export const Login = (props) => {
+import { onLoginSuccess } from "@/lib/client/login";
+
+const slientRefreshFetcher = async url => await axios.get(url).then(res => res.data);
+
+export default function Login(props) {
   const [isLoggedIn, setLoggedIn] = useState("PENDING");
   const [id, setID] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const router = useRouter();
+  const { data, error, isLoading } = useSWR(`/api/auth/silentRefresh`, slientRefreshFetcher);
 
-  useEffect(() => {
-    async function setLoginInfo() {
-      await onSilentRefresh;
-      onGetAuth().then(
-        () => {
-          setLoggedIn("YES");
-        }
-      ).catch(() => {
-        setLoggedIn("NO");
-      })
-    }
-    setLoginInfo();
-  }, []);
+  console.log(data);
 
-  const onLogin = () => {
-    const data = {
+  // useEffect(() => {
+  //   async function setLoginInfo() {
+  //     await onSilentRefresh;
+  //     onGetAuth().then(
+  //       () => {
+  //         setLoggedIn("YES");
+  //       }
+  //     ).catch(() => {
+  //       setLoggedIn("NO");
+  //     })
+  //   }
+  //   setLoginInfo();
+  // }, []);
+
+  const login = () => {
+    const authData = {
       id,
       password,
     };
-    axios.post("/api/auth/login", data).then(
-      (res) => {
-        onLoginSuccess(res);
-        alert("로그인 성공");
-        navigate("/");
-        navigate(0);
-      },
-      (err) => {
-        alert("로그인 정보가 맞지 않습니다.");
-      }
-    );
+    axios.post(`/api/auth/login`, authData).then(
+      ({ data }) => {
+        console.log(data);
+        if (data.isLoginSuccess) {
+          onLoginSuccess(data.accessToken);
+          alert("로그인 성공");
+          router.replace(`/`);
+        }
+        else {
+          alert("로그인 정보가 맞지 않습니다.");
+        }
+
+      });
   };
 
-  const onLogout = () => {
+  const logout = () => {
     axios.get("/api/auth/logout")
       .then(
         () => alert("로그아웃 되었습니다")
@@ -54,30 +62,31 @@ export const Login = (props) => {
   if (isLoggedIn === "YES") {
     return <>이미 로그인되어 있습니다</>;
   }
-  return (
-    <>
-      <input
-        placeholder="ID"
-        type="text"
-        name="username"
-        onChange={(e) => setID(e.target.value)}
-        required
-      ></input>
-      <input
-        placeholder="Password"
-        type="password"
-        name="password"
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      ></input>
-      <button onClick={onLogin}>로그인</button>
-      {/* <button onClick={onSilentRefresh} />
+  if (data)
+    return (
+      <>
+        <input
+          placeholder="ID"
+          type="text"
+          name="username"
+          onChange={(e) => setID(e.target.value)}
+          required
+        ></input>
+        <input
+          placeholder="Password"
+          type="password"
+          name="password"
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        ></input>
+        <button onClick={login}>로그인</button>
+        {/* <button onClick={onSilentRefresh} />
       <button onClick={onGetAuth} /> */}
-      <button onClick={onLogout}>로그아웃</button>
-    </>
-  );
+        <button onClick={logout}>로그아웃</button>
+      </>
+    );
 };
 
-export async function getServerSideProps() {
+// export async function getServerSideProps() {
 
-}
+// }

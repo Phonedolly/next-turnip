@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken';
 import { createRedisClient } from '@/lib/redis';
 
 export default async function handler(req, res) {
-  const redisClient = await createRedisClient();
   let verify = true;
   if (!req.cookies.refreshToken) {
     if (process.env.NODE_ENV === 'development') {
@@ -24,7 +23,7 @@ export default async function handler(req, res) {
   if (!verify) {
     return;
   }
-
+  const redisClient = await createRedisClient();
   const accessToken = jwt.sign(
     { id: redisClient.get(req.cookies.refreshToken) },
     process.env.ACCESS_TOKEN_SECRET,

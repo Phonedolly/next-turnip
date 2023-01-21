@@ -15,7 +15,8 @@ export default function Sitemap(props) {
           return (
             <Card
               title={each.title}
-              thumbnail={each.thumbnailURL}
+              thumbnailUrl={each.thumbnailURL}
+              thumbnailSize={each.thumbnailSize}  
               url={"/post/" + each.postURL}
               postDate={each.createdAt}
               key={each.title}

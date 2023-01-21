@@ -33,8 +33,10 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  const categories = await getAllCategories();
-  const { posts, canLoadMoreSitemap } = await getAllPosts(Number(context.params.sitemapIndex));
+  const [categories, [posts, canLoadMoreSitemap]] = await Promise.all([
+    getAllCategories(),
+    getAllPosts(Number(context.params.sitemapIndex))
+  ])
 
   return {
     props: {

@@ -15,11 +15,11 @@ export default function Card(props) {
         >
           <Link href={props.url}>
             <Image
-              src={props.thumbnail || "/nothing.jpg"}
+              src={props.thumbnailUrl || "/nothing.jpg"}
               alt="썸네일"
               className={styles.thumb}
-              width={500}
-              height={300}
+              width={300}
+              height={(props.thumbnailSize.height / props.thumbnailSize.width) * 300}
               priority
             />
             <h2 className={styles.title}>{props.title}</h2>
@@ -38,8 +38,8 @@ export default function Card(props) {
                 src={props.ogThumbnail ?? Nothing}
                 alt="썸네일"
                 className={styles.thumb}
-                width={500}
-                height={300}
+                width={props.thumbnailSize.width}
+                height={props.thumbnailSize.height}
                 priority
               />
             ) : (

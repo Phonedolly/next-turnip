@@ -23,10 +23,11 @@ export default function Home(props) {
   )
 }
 
-
 export async function getStaticProps() {
-  const categories = await getAllCategories();
-  const { posts, canLoadMoreSitemap } = await getAllPosts(0);
+  const [categories, [posts, canLoadMoreSitemap]] = await Promise.all([
+    getAllCategories(),
+    getAllPosts(0)
+  ])
 
   return {
     props: {
