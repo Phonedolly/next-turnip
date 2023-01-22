@@ -1,6 +1,4 @@
 import Head from 'next/head'
-import stringUrlExtractor from 'string-url-extractor';
-import getImageSize from 'image-size-from-url';
 
 import getAllCategories from '@/lib/getAllCategories'
 import { getPost, getPostsStaticPaths } from '@/lib/getPost'
@@ -12,6 +10,7 @@ import Markdown from '@/component/Markdown'
 import outlineStyles from '@/styles/Sitemap.module.scss'
 import postStyles from '@/styles/Post.module.scss'
 import Footer from '@/component/Footer'
+import probe from 'probe-image-size';
 
 export default function Post(props) {
   return (
@@ -64,10 +63,10 @@ export async function getStaticProps(context) {
 
   const imagesWithProperty = await Promise.all(
     post.images.map(async ({ imageLocation }) => {
-      return getImageSize(imageLocation)
+      return probe(imageLocation)
         .then(properties => ({ src: imageLocation, properties }))
         .catch(err => {
-          console.error(`target image src: ${cur}`)
+          console.error(`target image src: ${imageLocation}`)
           console.error(err);
 
           return {

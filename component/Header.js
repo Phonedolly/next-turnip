@@ -37,10 +37,13 @@ export default function Header(props) {
     overflow-y: scroll;
     width: 100%;`;
   };
+
   const closeSearchModal = () => {
     setSearchModalOpen(false);
-    document.body.style.cssText = "";
-    window.scrollTo(0, sessionStorage.getItem("scrollYWhenModal"));
+    if (typeof window !== 'undefined') {
+      document.body.style.cssText = "";
+      window.scrollTo(0, sessionStorage.getItem("scrollYWhenModal"));
+    }
   };
 
   const openCategoryModal = () => {

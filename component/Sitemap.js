@@ -7,6 +7,7 @@ import Footer from "./Footer";
 import styles from '@/styles/Sitemap.module.scss'
 
 export default function Sitemap(props) {
+  console.log(props);
   const router = useRouter();
   return (
     <div className={styles['main-container']}>
@@ -16,7 +17,7 @@ export default function Sitemap(props) {
             <Card
               title={each.title}
               thumbnailUrl={each.thumbnailURL}
-              thumbnailSize={each.thumbnailSize}  
+              thumbnailSize={each.thumbnailSize}
               url={"/post/" + each.postURL}
               postDate={each.createdAt}
               key={each.title}
@@ -32,10 +33,13 @@ export default function Sitemap(props) {
             style={{ marginTop: "2em" }}
             onClick={() => {
               if (props.sitemapIndex === 1) {
-                router.push('/');
+                router.push(props.viewCategory === true ?
+                  `/category/${props.categoryUrl}` :
+                  '/');
               }
               else {
-                router.push(`/${props.sitemapIndex - 1}`);
+                router.push(props.viewCategory === true ?
+                  `/category/${props.categoryUrl}/${props.sitemapIndex - 1}` : `/${props.sitemapIndex - 1}`);
               }
             }}
           >이전</CommonButton> : null
@@ -43,7 +47,8 @@ export default function Sitemap(props) {
         {props.canLoadMoreSitemap === true ?
           <CommonButton
             onClick={() => {
-              router.push(`/${props.sitemapIndex + 1}`);
+              router.push(props.viewCategory === true ?
+                `/category/${props.categoryUrl}/${props.sitemapIndex + 1}` : `/${props.sitemapIndex + 1}`);
             }}
             style={{ marginTop: "2em" }}
           >

@@ -5,6 +5,7 @@ import { Router, useRouter } from "next/router";
 import commonStyles from "@/styles/Common.module.scss";
 import commonModalStyles from "@/styles/CommonModal.module.scss";
 import categoryModalStyles from "@/styles/CategoryModal.module.scss";
+import Link from "next/link";
 
 export default function CategoryModal({
   isModalOpen,
@@ -42,26 +43,27 @@ export default function CategoryModal({
               <div className={categoryModalStyles["category-list"]}>
                 {categories.map((eachCategory, index) => (
                   <motion.li
-                    className={`${commonStyles["common-list-item"]} ${categoryModalStyles["category-item"]}`}
-                    onClick={() => {
-                      closeModal();
-                      router.push(`/category/${eachCategory.categoryURL}`);
-                    }}
+                    className={`${commonStyles["common-list-item"]}`}
                     key={uuidv4()}
-                    whileHover={{
-                      backgroundColor: "rgb(150, 150, 150, 0.5)",
-                      // "@media (prefers-color-scheme: dark)": {
-                      //   backgroundColor: "rgba(40, 40, 40, 0.7)",
-                      // },
-                      transition: { duration: 0.3 },
-                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 1.0 }}
+                    transition={{ type: "keyframes", duration: 0.1 }}
                   >
-                    {/* <img src={eachCategory.thumbnailURL} /> */}
-                    <p className={categoryModalStyles["category-name"]}>{eachCategory.categoryName}</p>
-                    <p className={categoryModalStyles["nums-of-posts"]}>
-                      {eachCategory.numOfPosts}개 포스트
-                    </p>
+                    <Link
+                      href={`/category/${eachCategory.categoryURL}`}
+                      onClick={() => {
+                        closeModal();
+                      }}
+                      className={`${commonStyles['item-link']} ${categoryModalStyles['category-item']}`}
+                    >
+                      {/* <img src={eachCategory.thumbnailURL} /> */}
+                      <h3 className={categoryModalStyles["category-name"]}>{eachCategory.categoryName}</h3>
+                      <p className={categoryModalStyles["num-of-posts"]}>
+                        {eachCategory.numOfPosts}개 포스트
+                      </p>
+                    </Link>
                   </motion.li>
+
                 ))}
               </div>
 

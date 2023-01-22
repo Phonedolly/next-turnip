@@ -1,3 +1,5 @@
+import { QueryClient, QueryClientProvider } from 'react-query'
+
 import '@/styles/globals.css'
 
 import localFont from '@next/font/local'
@@ -17,10 +19,14 @@ const spoqa = localFont({
   ],
 })
 
+const queryClient = new QueryClient();
+
 export default function App({ Component, pageProps }) {
   return (
-    <main className={spoqa.className}>
-      <Component {...pageProps} />
-    </main>
+    <QueryClientProvider client={queryClient}>
+      <main className={spoqa.className}>
+        <Component {...pageProps} />
+      </main>
+    </QueryClientProvider>
   )
 }

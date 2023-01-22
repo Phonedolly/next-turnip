@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import styles from "@/styles/Card.module.scss";
 
 export default function Card(props) {
-  console.log(props);
   return (
     <>
       {props.mode === "curator" ? (

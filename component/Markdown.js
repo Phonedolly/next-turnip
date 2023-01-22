@@ -50,7 +50,6 @@ export default function Markdown(articleProps) {
               <div className={postStyles['slider-viewer']}>{children}</div>
             );
           } else if (className === "link-box") {
-            console.log(`ogThumbnailSize is ${articleProps.imageSizes[`$${children[9]?.props.children[0]}`]}`)
             return (
               <Card
                 title={children[1].props.children[0]}
@@ -126,8 +125,8 @@ export default function Markdown(articleProps) {
           const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
           const metaWidth = metastring?.match(/{([^}]+)x/);
           const metaHeight = metastring?.match(/x([^}]+)}/);
-          const width = metaWidth ? metaWidth[1] : articleProps.imageSizes[`${image.properties.src}`].width
-          const height = metaHeight ? metaHeight[1] : articleProps.imageSizes[`${image.properties.src}`].height;
+          const width = metaWidth ? metaWidth[1] : articleProps.imageSizes[`${image.properties.src}`]?.width;
+          const height = metaHeight ? metaHeight[1] : articleProps.imageSizes[`${image.properties.src}`]?.height;
           const isPriority = metastring?.toLowerCase().match('{priority}');
           const hasCaption = metastring?.toLowerCase().includes('{caption:');
           const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
@@ -135,8 +134,8 @@ export default function Markdown(articleProps) {
           return (
             <Image
               src={image.properties.src}
-              width={width}
-              height={height}
+              width={width || 500}
+              height={height || 300}
               className={postStyles['post-image']}
               alt={alt}
               priority
