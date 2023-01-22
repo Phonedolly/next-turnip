@@ -4,7 +4,6 @@ import { motion } from 'framer-motion'
 
 import styles from "@/styles/Card.module.scss";
 
-
 export default function Card(props) {
   console.log(props);
   return (
@@ -34,21 +33,21 @@ export default function Card(props) {
           target="_blank" rel="noreferrer"
           href={props.ogLinkURL}
         >
-          {/* {props.ogThumbnail ? (
+          {props.ogThumbnail ? (
             <Image
               src={props.ogThumbnail ?? Nothing}
               alt="썸네일"
               className={`${styles['thumb']} ${styles['thumb-in-post']}`}
-              width={500}
-              height={300}
+              width={props.ogThumbnailSize.width}
+              height={props.ogThumbnailSize.height}
               priority
             />
           ) : (
             null
-          )} */}
+          )}
           <div className={styles['text-area']}>
             <h2 className={styles.title}>{props.title}</h2>
-            <p className={styles.summary}>{props.ogLinkSummary}</p>
+            <p className={styles.summary}>{props.ogLinkSummary.length > 192 ? `${props.ogLinkSummary.slice(0, 192)} ...` : props.ogLinkSummary}</p>
             <p className={styles.ogLinkRepresentativeUrl}>
               {props.ogLinkRepresentativeUrl}
             </p>

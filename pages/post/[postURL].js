@@ -77,14 +77,16 @@ export async function getStaticProps(context) {
         })
     }))
 
+  const imageSizes = imagesWithProperty.reduce(
+    (prev, cur) => {
+      prev[cur.src] = cur.properties
+      return prev;
+    }, {})
+
   return {
     props: {
       post: {
-        imageSizes: imagesWithProperty.reduce(
-          (prev, cur) => {
-            prev[cur.src] = cur.properties
-            return prev;
-          }, {}),
+        imageSizes,
         ...post
       },
       categories

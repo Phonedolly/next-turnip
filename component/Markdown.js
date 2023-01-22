@@ -50,6 +50,7 @@ export default function Markdown(articleProps) {
               <div className={postStyles['slider-viewer']}>{children}</div>
             );
           } else if (className === "link-box") {
+            console.log(`ogThumbnailSize is ${articleProps.imageSizes[`$${children[9]?.props.children[0]}`]}`)
             return (
               <Card
                 title={children[1].props.children[0]}
@@ -57,6 +58,7 @@ export default function Markdown(articleProps) {
                 ogLinkRepresentativeUrl={children[5].props.children[0]}
                 ogLinkURL={children[7].props.children[0]}
                 ogThumbnail={children[9]?.props.children[0]}
+                ogThumbnailSize={articleProps.imageSizes[`$${children[9]?.props.children[0]}`] || { width: 500, height: 300 }}
               />
             );
           } else if (className === "math math-display") {
@@ -131,21 +133,19 @@ export default function Markdown(articleProps) {
           const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
 
           return (
-
-              <Image
-                src={image.properties.src}
-                width={width}
-                height={height}
-                className={postStyles['post-image']}
-                alt={alt}
-                priority
-              // fill
-              // sizes="(max-width: 768px) 100vw,
-              // (max-width: 1200px) 50vw,
-              // 33vw"
-              // style={{ overflowX: "scroll", objectFit:"contain" }}
-              />
-
+            <Image
+              src={image.properties.src}
+              width={width}
+              height={height}
+              className={postStyles['post-image']}
+              alt={alt}
+              priority
+            // fill
+            // sizes="(max-width: 768px) 100vw,
+            // (max-width: 1200px) 50vw,
+            // 33vw"
+            // style={{ overflowX: "scroll", objectFit:"contain" }}
+            />
           )
         },
         span: ({ className, children, ...props }) => {
