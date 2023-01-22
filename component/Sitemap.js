@@ -7,7 +7,6 @@ import Footer from "./Footer";
 import styles from '@/styles/Sitemap.module.scss'
 
 export default function Sitemap(props) {
-  console.log(props);
   const router = useRouter();
   return (
     <div className={styles['main-container']}>

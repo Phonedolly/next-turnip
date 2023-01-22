@@ -40,7 +40,6 @@ export async function getStaticProps(context) {
     getAllCategories(),
     getCategoryId(context.params.categoryUrl)
   ])
-  console.log(context);
   const [posts, canLoadMoreSitemap] = await getAllPosts(Number(context.params.sitemapIndex), currentCategoryId);
 
   return {
