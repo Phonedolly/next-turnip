@@ -2,34 +2,33 @@ import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import useSWR from 'swr';
 
 import { onLoginSuccess } from "@/lib/client/login";
-
-const slientRefreshFetcher = async url => await axios.get(url).then(res => res.data);
+import { useQuery } from "react-query";
 
 export default function Login(props) {
   const [isLoggedIn, setLoggedIn] = useState("PENDING");
   const [id, setID] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const { data, error, isLoading } = useSWR(`/api/auth/silentRefresh`, slientRefreshFetcher);
+  const { status, data, error, isLoading } = useQuery("silentRefresh",
+    () => axios.get('/api/auth/silentRefresh', { withCredentials: true }),
+    {
+      enabled: true,
+      refetchOnWindowFocus: true,
+      retry: 0
+    });
 
-  console.log(data);
-
-  // useEffect(() => {
-  //   async function setLoginInfo() {
-  //     await onSilentRefresh;
-  //     onGetAuth().then(
-  //       () => {
-  //         setLoggedIn("YES");
-  //       }
-  //     ).catch(() => {
-  //       setLoggedIn("NO");
-  //     })
-  //   }
-  //   setLoginInfo();
-  // }, []);
+  useEffect(() => {
+    if (status === "success" && data?.data.isSilentRefreshSuccess === true) {
+      console.log(data.data);
+      onLoginSuccess(data.data.accessToken);
+      console.log(axios.defaults.headers.common)
+      setLoggedIn(true)
+    } else {
+      setLoggedIn(false);
+    }
+  }, [data, status]);
 
   const login = () => {
     const authData = {
@@ -38,8 +37,7 @@ export default function Login(props) {
     };
     axios.post(`/api/auth/login`, authData).then(
       ({ data }) => {
-        console.log(data);
-        if (data.isLoginSuccess) {
+        if (data.isLoginSuccess === true) {
           onLoginSuccess(data.accessToken);
           alert("로그인 성공");
           router.replace(`/`);
@@ -52,17 +50,20 @@ export default function Login(props) {
   };
 
   const logout = () => {
-    axios.get("/api/auth/logout")
+    axios.get("/api/auth/logout", { withCredentials: true })
       .then(
         () => alert("로그아웃 되었습니다")
       ).catch(() => {
         alert("로그아웃 실패");
       })
   };
-  if (isLoggedIn === "YES") {
-    return <>이미 로그인되어 있습니다</>;
+  if (isLoggedIn === true) {
+    return <>
+      <button onClick={logout}>로그아웃</button>
+      <p>이미 로그인되어 있습니다</p>
+    </>
   }
-  if (data)
+  else if (isLoggedIn === false && status === "success") {
     return (
       <>
         <input
@@ -80,13 +81,12 @@ export default function Login(props) {
           required
         ></input>
         <button onClick={login}>로그인</button>
-        {/* <button onClick={onSilentRefresh} />
-      <button onClick={onGetAuth} /> */}
-        <button onClick={logout}>로그아웃</button>
       </>
-    );
+    )
+  }
+  else {
+    return (
+      <p>loading</p>
+    )
+  }
 };
-
-// export async function getServerSideProps() {
-
-// }
