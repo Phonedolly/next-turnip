@@ -15,15 +15,17 @@ import { useQuery } from "react-query";
 
 
 export default function SearchModal({ isModalOpen, closeModal }) {
-  const { status, refetch, isError, data, error } = useQuery("searchPost", () => {
-    setIsSearching(true);
-    return axios.post(`/api/search`, { query: inputText })
-
-  }, {
-    enabled: false,
-    refetchOnWindowFocus: false,
-    retry: 0
-  });
+  const { status, refetch, isError, data, error } = useQuery(
+    "searchPost",
+    () => {
+      setIsSearching(true);
+      return axios.post(`/api/search`, { query: inputText })
+    },
+    {
+      enabled: false,
+      refetchOnWindowFocus: false,
+      retry: 0
+    });
   const router = useRouter();
 
   const [isSearching, setIsSearching] = useState(false);
