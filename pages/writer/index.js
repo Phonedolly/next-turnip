@@ -3,7 +3,7 @@ import axios from "axios";
 import { nanoid } from "nanoid";
 import { useEffect, useLayoutEffect } from "react";
 import Image from "next/image";
-
+import { useQuery } from "react-query";
 import { useState } from "react";
 // import { useNavigate, Navigate, useParams } from "react-router-dom";
 import { useRouter } from "next/router";
@@ -11,10 +11,12 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import useUnload from "@/hook/useUnload"
 import getAllCategories from "@/lib/getAllCategories";
-import { onSilentRefresh } from "@/lib/client/login";
+import { onLoginSuccess } from "@/lib/client/login";
 
 // import "./Common.scss";
 // import "./Writer.scss";
+import writerStyles from '@/styles/Writer.module.scss'
+
 import Markdown from "@/component/Markdown";
 import CommonInput from "@/component/CommonInput";
 
@@ -30,72 +32,65 @@ export default function Writer(props) {
   const [images, setImages] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const router = useRouter();
-  //   const navigate = useNavigate();
-  //   const params = useParams();
+  const { status, data, error, isLoading } = useQuery("silentRefresh",
+    () => axios.get('/api/auth/silentRefresh', { withCredentials: true }),
+    {
+      enabled: true,
+      refetchOnWindowFocus: true,
+      retry: 0
+    });
+
   useEffect(() => {
-    async function setLoginInfo() {
-      await onSilentRefresh().then(
-        () => {
-          setLoggedIn("YES");
-        },
-        () => {
-          setLoggedIn("NO");
-          return;
-        }
-      );
-
-    }
-
     async function getMd() {
-      console.log(router.query);
-      await axios.get("/api/post/" + router.query).then(
-        (res) => {
-          set_id(res.data._id);
-          setTitle(res.data.title);
-          setNewTitle(res.data.title);
-          setMd(res.data.content);
-          if (res.data.category) {
-            setSelectedCategory(res.data.category);
-          }
-          setThumbURL(() => res.data.thumbnailURL);
-
-          res.data.images?.forEach((eachImage) => {
-            const imageData = {
-              imageLocation: eachImage.imageLocation,
-              imageName: eachImage.imageName,
-              isThumb: eachImage.imageLocation === res.data.thumbnailURL,
-            };
-            setImages((prevImages) => prevImages.concat(imageData));
-          });
-
-          /* 썸네일이지만 본문에 쓰이지 않은 이미지를 images에 추가 */
-          let thereIsThumbAndMd = false; // 썸네일과 본문에 동시에 쓰인 이미지는 없을 것이다
-          res.data.images.forEach((eachImage) => {
-            if (eachImage.imageLocation === res.data.thumbnailURL) {
-              thereIsThumbAndMd = true; // 썸네일이지만 본문에 쓰인 이미지를 발견했다
+      await axios.post("/api/getPost/", { postURL: router.query.postURL })
+        .then(
+          (res) => {
+            set_id(res.data.postData._id);
+            setTitle(res.data.postData.title);
+            setNewTitle(res.data.postData.title);
+            setMd(res.data.postData.content);
+            if (res.data.category) {
+              setSelectedCategory(res.data.postData.category);
             }
-          });
-          if (!thereIsThumbAndMd) {
-            const token = res.data.thumbnailURL?.split("/");
+            setThumbURL(() => res.data.postData.thumbnailURL);
 
-            if (token) {
-              setImages((images) => {
-                const newCond = [
-                  {
-                    imageLocation: res.data.thumbnailURL,
-                    imageName: token[token.length - 1],
-                    isThumb: true,
-                  },
-                ].concat(images);
-                return newCond;
-              });
+            res.data.postData.images?.forEach((eachImage) => {
+              const imageData = {
+                imageLocation: eachImage.imageLocation,
+                imageName: eachImage.imageName,
+                isThumb: eachImage.imageLocation === res.data.thumbnailURL,
+              };
+              setImages((prevImages) => prevImages.concat(imageData));
+            });
+
+            /* 썸네일이지만 본문에 쓰이지 않은 이미지를 images에 추가 */
+            let thereIsThumbAndMd = false; // 썸네일과 본문에 동시에 쓰인 이미지는 없을 것이다
+            res.data.postData.images.forEach((eachImage) => {
+              if (eachImage.imageLocation === res.data.postData.thumbnailURL) {
+                thereIsThumbAndMd = true; // 썸네일이지만 본문에 쓰인 이미지를 발견했다
+              }
+            });
+            if (!thereIsThumbAndMd) {
+              const token = res.data.postData.thumbnailURL?.split("/");
+
+              if (token) {
+                setImages((images) => {
+                  const newCond = [
+                    {
+                      imageLocation: res.data.postData.thumbnailURL,
+                      imageName: token[token.length - 1],
+                      isThumb: true,
+                    },
+                  ].concat(images);
+                  return newCond;
+                });
+              }
             }
+          },
+          (err) => {
+            console.error(err);
           }
-        },
-        (err) => {
-          console.error(err);
-        }
-      );
+        );
     }
 
     async function importArticle() {
@@ -119,13 +114,21 @@ export default function Writer(props) {
         });
     }
 
-    setLoginInfo();
-    if (props.isEdit) {
-      getMd();
-    } else if (props.isImport) {
-      importArticle();
+    if (status === "success" &&
+      data?.data.isSilentRefreshSuccess === true &&
+      router.query.postURL) {
+      onLoginSuccess(data.data.accessToken);
+      if (props.isEdit) {
+        getMd();
+      } else if (props.isImport) {
+        importArticle();
+      }
+      setLoggedIn(true)
+
+    } else {
+      setLoggedIn(false);
     }
-  }, [router.query, props.isEdit, props.isImport, props.importURL]);
+  }, [router.query, props.isEdit, props.isImport, props.importURL, status]);
 
   const handleImageInput = async (e) => {
     const formData = new FormData();
@@ -300,7 +303,7 @@ export default function Writer(props) {
   } else {
     return (
       <>
-        <Flex column className="writer-container">
+        <Flex column className={writerStyles["writer-container"]}>
           <Flex row justifySpaceBetween>
             <CommonInput
               placeholder="제목"
@@ -314,15 +317,15 @@ export default function Writer(props) {
               }}
               style={{ width: "60%" }}
             />
-            <button onClick={saveTempData} className="writer-button">
+            <button onClick={saveTempData} className={writerStyles["writer-button"]}>
               임시 저장
             </button>
-            <button onClick={LoadTempData} className="writer-button small-text">
+            <button onClick={LoadTempData} className={writerStyles["writer-button small-text"]}>
               임시 저장<br></br>불러오기
             </button>
             <button
               onClick={removeTempData}
-              className="writer-button small-text"
+              className={writerStyles["writer-button small-text"]}
             >
               임시 데이터<br></br>지우기
             </button>
@@ -339,27 +342,29 @@ export default function Writer(props) {
                 </option>
               ))}
             </select>
-            <button onClick={handleUpload} className="writer-button">
+            <button onClick={handleUpload} className={writerStyles["writer-button"]}>
               업로드
             </button>
           </Flex>
           <textarea
             placeholder="썸네일 URL"
-            className="inputThumbnailArea"
+            className={writerStyles["inputThumbnailArea"]}
             value={thumbURL}
             onInput={(e) => {
               setThumbURL(e.target.value);
             }}
           />
           <div>
-            <div className="imageGroup">
+            <div className={writerStyles["imageGroup"]}>
               {images.map((eachImage) => (
-                <Flex column key={nanoid()} className="uploadedImageBox">
+                <Flex column key={nanoid()} className={writerStyles["uploadedImageBox"]}>
                   <Image
                     src={eachImage.imageLocation}
-                    className="uploadedImage"
+                    className={writerStyles["uploadedImage"]}
                     alt={eachImage.imageLocation}
                     onClick={handleThumb}
+                    width={100}
+                    height={100}
                   />
                   <pre disabled>{eachImage.imageLocation}</pre>
                   {eachImage.isThumb && <p>대표</p>}
@@ -368,10 +373,10 @@ export default function Writer(props) {
             </div>
           </div>
           <input type="file" accept="image/*" onChange={handleImageInput} />
-          <div className="inputAndMd">
+          <div className={writerStyles["inputAndMd"]}>
             <textarea
               placeholder="내용을 입력하세요"
-              className="inputMdArea"
+              className={writerStyles["inputMdArea"]}
               value={md}
               onChange={(e) => {
                 handleSetValue(e);
@@ -382,7 +387,7 @@ export default function Writer(props) {
                 autoResizeTextarea();
               }}
             />
-            <div className="showTextArea">
+            <div className={writerStyles["showTextArea"]}>
               <ErrorBoundary
                 FallbackComponent={mdErrorHandler}
                 onReset={() => {
