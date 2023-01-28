@@ -1,6 +1,6 @@
 import Flex from "@react-css/flex";
 import axios from "axios";
-import { nanoid } from "nanoid";
+import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useLayoutEffect } from "react";
 import Image from "next/image";
 import { useQuery } from "react-query";
@@ -20,8 +20,6 @@ import writerStyles from '@/styles/Writer.module.scss'
 import Markdown from "@/component/Markdown";
 import CommonInput from "@/component/CommonInput";
 
-
-
 export default function Writer(props) {
   const [isLoggedIn, setLoggedIn] = useState("PENDING");
   const [_id, set_id] = useState("");
@@ -30,6 +28,7 @@ export default function Writer(props) {
   const [thumbURL, setThumbURL] = useState("");
   const [md, setMd] = useState("");
   const [images, setImages] = useState([]);
+  const [imageSizes, setImageSizes] = useState({});
   const [selectedCategory, setSelectedCategory] = useState("");
   const router = useRouter();
   const { status, data, error, isLoading } = useQuery("silentRefresh",
@@ -131,34 +130,85 @@ export default function Writer(props) {
   }, [router.query, props.isEdit, props.isImport, props.importURL, status]);
 
   const handleImageInput = async (e) => {
-    const formData = new FormData();
-    formData.append("filename", e.target.files[0].name);
-    formData.append("img", e.target.files[0]);
+    // const formData = new FormData();
+    // formData.append("filename", e.target.files[0].name);
+    // formData.append("img", e.target.files[0]);
+    const file = e.target.files?.[0];
+    const fileName = encodeURIComponent(file.name);
+    const fileType = encodeURIComponent(file.type)
 
-    axios
-      .post("/api/publish/uploadImage", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    console.log(file)
+    console.log(fileName)
+    console.log(fileType)
+
+    axios.post(`/api/uploadImage`, {
+      fileName,
+      fileType,
+    }).then(({ data }) => {
+      const { url, fields } = data;
+      const formData = new FormData();
+
+      Object.entries({ ...fields, file }).forEach(([key, value]) => {
+        formData.append(key, value)
       })
-      .then(
-        (res) => {
-          setImages((images) => {
-            const newCond = images.concat({
-              imageLocation: res.data.imageLocation,
-              imageName: res.data.imageName,
-              isThumb: images.length === 0 ? true : false,
-            });
-            if (images.length === 0) {
-              setThumbURL(res.data.imageLocation);
-            }
-            return newCond;
+
+      axios.post(`${url}`, formData).then(async ({ data }) => {
+        console.log(`Uploaded!`);
+
+        const imageLocation = `${url}${fields.key}`
+        const imageName = `${fields.key.slice(fields.key.lastIndexOf('/') + 1)}`
+        const imageSize = await axios.post('/api/getImageSize', { imageLocation }).then(({ data }) => data.properties);
+
+        setImages((images) => {
+          const newCond = images.concat({
+            imageLocation,
+            imageName,
+            isThumb: images.length === 0 ? true : false,
           });
-        },
-        (err) => {
-          alert("이미지 업로드 실패");
-        }
-      );
+          if (images.length === 0) {
+            setThumbURL(imageLocation);
+          }
+
+          setImageSizes(prev => {
+            return {
+              ...prev,
+              [imageLocation]: imageSize
+            }
+          })
+          return newCond;
+        });
+      }).catch(e => {
+        console.error(`Image Upload Error!`);
+        console.error(e);
+      })
+    }).catch((e) => {
+      console.error(`Image Upload Error!`);
+      console.error(e);
+    })
+    // axios
+    //   .post("/api/uploadImage", formData, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   })
+    //   .then(
+    //     (res) => {
+    //       setImages((images) => {
+    //         const newCond = images.concat({
+    //           imageLocation: res.data.imageLocation,
+    //           imageName: res.data.imageName,
+    //           isThumb: images.length === 0 ? true : false,
+    //         });
+    //         if (images.length === 0) {
+    //           setThumbURL(res.data.imageLocation);
+    //         }
+    //         return newCond;
+    //       });
+    //     },
+    //     (err) => {
+    //       alert("이미지 업로드 실패");
+    //     }
+    //   );
   };
 
   const handleThumb = (e) => {
@@ -220,7 +270,7 @@ export default function Writer(props) {
       }
     });
     axios
-      .post(`/api/publish/${props.isEdit ? "edit" : ""}`, {
+      .post(`/api/publish`, {
         _id: _id,
         title: title,
         newTitle: props.isEdit ? newTitle : null,
@@ -229,6 +279,7 @@ export default function Writer(props) {
         imageWhitelist: imageWhitelist,
         imageBlacklist: imageBlacklist,
         category: selectedCategory,
+        isEdit: props.isEdit
       })
       .then(
         (res) => {
@@ -337,7 +388,7 @@ export default function Writer(props) {
               key={selectedCategory}
             >
               {props.categories?.map((eachCategory) => (
-                <option key={eachCategory._id} value={eachCategory._id}>
+                <option key={uuidv4()} value={eachCategory._id}>
                   {eachCategory.name}
                 </option>
               ))}
@@ -357,7 +408,7 @@ export default function Writer(props) {
           <div>
             <div className={writerStyles["imageGroup"]}>
               {images.map((eachImage) => (
-                <Flex column key={nanoid()} className={writerStyles["uploadedImageBox"]}>
+                <Flex column key={uuidv4()} className={writerStyles["uploadedImageBox"]}>
                   <Image
                     src={eachImage.imageLocation}
                     className={writerStyles["uploadedImage"]}
@@ -390,11 +441,11 @@ export default function Writer(props) {
             <div className={writerStyles["showTextArea"]}>
               <ErrorBoundary
                 FallbackComponent={mdErrorHandler}
-                onReset={() => {
-                  setMd((prevMd) => prevMd.slice(0, prevMd.length - 1));
-                }}
+              // onReset={() => {
+              //   setMd((prevMd) => prevMd.slice(0, prevMd.length - 1));
+              // }}
               >
-                <Markdown md={md} />
+                <Markdown content={md} imageSizes={imageSizes} />
               </ErrorBoundary>
             </div>
           </div>
