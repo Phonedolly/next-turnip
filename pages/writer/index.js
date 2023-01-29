@@ -19,9 +19,10 @@ import writerStyles from '@/styles/Writer.module.scss'
 
 import Markdown from "@/component/Markdown";
 import CommonInput from "@/component/CommonInput";
+import CommonButton from "@/component/CommonButton";
 
 export default function Writer(props) {
-  const [isLoggedIn, setLoggedIn] = useState("PENDING");
+  const [isLoggedIn, setLoggedIn] = useState(false);
   const [_id, set_id] = useState("");
   const [title, setTitle] = useState("");
   const [newTitle, setNewTitle] = useState("");
@@ -37,7 +38,8 @@ export default function Writer(props) {
       enabled: true,
       refetchOnWindowFocus: true,
       retry: 0
-    });
+    }
+  );
 
   useEffect(() => {
     async function getMd() {
@@ -116,14 +118,13 @@ export default function Writer(props) {
     if (status === "success" &&
       data?.data.isSilentRefreshSuccess === true &&
       router.query.postURL) {
+      setLoggedIn(true)
       onLoginSuccess(data.data.accessToken);
       if (props.isEdit) {
         getMd();
       } else if (props.isImport) {
         importArticle();
       }
-      setLoggedIn(true)
-
     } else {
       setLoggedIn(false);
     }
@@ -232,10 +233,6 @@ export default function Writer(props) {
     });
   };
 
-  const handleSetValue = (e) => {
-    setMd(e.target.value);
-  };
-
   const handleSetTab = (e) => {
     if (e.keyCode === 9) {
       e.preventDefault();
@@ -244,7 +241,7 @@ export default function Writer(props) {
       let end = e.target.selectionEnd;
       e.target.value = val.substring(0, start) + "\t" + val.substring(end);
       e.target.selectionStart = e.target.selectionEnd = start + 1;
-      handleSetValue(e);
+      setMd(e.target.value);
       return false; //  prevent focus
     }
   };
@@ -347,15 +344,12 @@ export default function Writer(props) {
     }
   };
 
-  if (isLoggedIn === "NO") {
-    router.replace('/');
-  } else if (isLoggedIn === "PENDING") {
-    return <div>기다리세요</div>;
-  } else {
+  if (status === "success" &&
+    data?.data.isSilentRefreshSuccess === true) {
     return (
       <>
         <Flex column className={writerStyles["writer-container"]}>
-          <Flex row justifySpaceBetween>
+          <Flex row justifySpaceBetween alignItemsCenter>
             <CommonInput
               placeholder="제목"
               value={props.isEdit ? newTitle : title}
@@ -366,20 +360,20 @@ export default function Writer(props) {
                   setTitle(e.target.value);
                 }
               }}
-              style={{ width: "60%" }}
+              style={{ width: "50%" }}
             />
-            <button onClick={saveTempData} className={writerStyles["writer-button"]}>
+            <CommonButton onClick={saveTempData} className={writerStyles["writer-button"]}>
               임시 저장
-            </button>
-            <button onClick={LoadTempData} className={writerStyles["writer-button small-text"]}>
+            </CommonButton>
+            <CommonButton onClick={LoadTempData} className={writerStyles["writer-button small-text"]}>
               임시 저장<br></br>불러오기
-            </button>
-            <button
+            </CommonButton>
+            <CommonButton
               onClick={removeTempData}
               className={writerStyles["writer-button small-text"]}
             >
               임시 데이터<br></br>지우기
-            </button>
+            </CommonButton>
             <select
               onChange={(e) => {
                 setSelectedCategory(e.target.value);
@@ -389,7 +383,7 @@ export default function Writer(props) {
             >
               {props.categories?.map((eachCategory) => (
                 <option key={uuidv4()} value={eachCategory._id}>
-                  {eachCategory.name}
+                  {eachCategory.categoryName}
                 </option>
               ))}
             </select>
@@ -430,7 +424,7 @@ export default function Writer(props) {
               className={writerStyles["inputMdArea"]}
               value={md}
               onChange={(e) => {
-                handleSetValue(e);
+                setMd(e.target.value);
                 autoResizeTextarea();
               }}
               onKeyDown={(e) => {
@@ -452,6 +446,11 @@ export default function Writer(props) {
         </Flex>
       </>
     );
+  } else if (status === "success" &&
+    data?.data.isSilentRefreshSuccess === false) {
+    router.replace('/');
+  } else {
+    return <div>기다리세요</div>;
   }
 }
 

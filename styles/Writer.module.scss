@@ -1,5 +1,5 @@
 .writer-container {
-//   margin: 1em 5vw;
+  margin: 1em 3vw;
 }
 
 .inputMdArea {
@@ -16,6 +16,7 @@
     BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji";
   line-height: 1.5;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 20px 0px;
 }
 
 .writer-button {
@@ -26,9 +27,7 @@
   border: none;
   border-radius: 7px;
   background-color: var(--gray-600);
-}
-.writer-button:hover {
-  background: var(--gray-400);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 20px 0px;
 }
 
 .small-text {
