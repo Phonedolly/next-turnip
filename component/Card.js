@@ -18,7 +18,7 @@ export default function Card(props) {
               alt="썸네일"
               className={styles.thumb}
               width={300}
-              height={(props.thumbnailSize.height / props.thumbnailSize.width) * 300}
+              height={props.thumbnailSize?.height? (props.thumbnailSize.height / props.thumbnailSize.width) * 300 : 500}
               priority
             />
             <h2 className={styles.title}>{props.title}</h2>

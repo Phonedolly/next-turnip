@@ -30,10 +30,19 @@ export default function Writer(props) {
   const [md, setMd] = useState("");
   const [images, setImages] = useState([]);
   const [imageSizes, setImageSizes] = useState({});
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState({});
   const router = useRouter();
   const { status, data, error, isLoading } = useQuery("silentRefresh",
-    () => axios.get('/api/auth/silentRefresh', { withCredentials: true }),
+    () => axios.get('/api/auth/silentRefresh', { withCredentials: true }).then(({ data }) => {
+      console.log(data)
+      if (data.isSilentRefreshSuccess === true) {
+        onLoginSuccess(data.accessToken);
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+      return data
+    }),
     {
       enabled: true,
       refetchOnWindowFocus: true,
@@ -114,12 +123,12 @@ export default function Writer(props) {
           setMd(mdContent);
         });
     }
-
     if (status === "success" &&
-      data?.data.isSilentRefreshSuccess === true &&
+      data.isSilentRefreshSuccess === true &&
       router.query.postURL) {
       setLoggedIn(true)
-      onLoginSuccess(data.data.accessToken);
+      onLoginSuccess(data.accessToken);
+      console.log(`onLoginSuccess`)
       if (props.isEdit) {
         getMd();
       } else if (props.isImport) {
@@ -128,7 +137,14 @@ export default function Writer(props) {
     } else {
       setLoggedIn(false);
     }
-  }, [router.query, props.isEdit, props.isImport, props.importURL, status]);
+  }, [router.query, props.isEdit, props.isImport, props.importURL, status, data?.accessToken, data?.isSilentRefreshSuccess]);
+
+  useEffect(() => {
+    console.log(props.categories);
+    if (props.categories.length > 0 && !(selectedCategory?._id)) {
+      setSelectedCategory(props.categories[0])
+    }
+  }, [props.categories, selectedCategory])
 
   const handleImageInput = async (e) => {
     // const formData = new FormData();
@@ -137,10 +153,6 @@ export default function Writer(props) {
     const file = e.target.files?.[0];
     const fileName = encodeURIComponent(file.name);
     const fileType = encodeURIComponent(file.type)
-
-    console.log(file)
-    console.log(fileName)
-    console.log(fileType)
 
     axios.post(`/api/uploadImage`, {
       fileName,
@@ -266,22 +278,23 @@ export default function Writer(props) {
         });
       }
     });
+    console.log(imageBlacklist)
     axios
       .post(`/api/publish`, {
         _id: _id,
         title: title,
         newTitle: props.isEdit ? newTitle : null,
         content: md,
-        thumbnailURL: thumbURL,
+        thumbnailURL: thumbURL || null,
         imageWhitelist: imageWhitelist,
         imageBlacklist: imageBlacklist,
         category: selectedCategory,
-        isEdit: props.isEdit
+        isEdit: props?.isEdit ? true : false
       })
       .then(
         (res) => {
           // removeBeforeUnload();
-          router.push(`/`);
+          router.replace(`/`);
         },
         (err) => {
           console.error(err);
@@ -345,7 +358,7 @@ export default function Writer(props) {
   };
 
   if (status === "success" &&
-    data?.data.isSilentRefreshSuccess === true) {
+    data.isSilentRefreshSuccess === true) {
     return (
       <>
         <Flex column className={writerStyles["writer-container"]}>
