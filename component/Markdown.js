@@ -17,7 +17,6 @@ import postStyles from '@/styles/Post.module.scss';
 import Card from "@/component/Card";
 
 export default function Markdown(articleProps) {
-  console.log(articleProps);
   /*
   https://www.joshwcomeau.com/react/the-perils-of-rehydration/#the-solution
   */

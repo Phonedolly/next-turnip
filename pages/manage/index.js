@@ -9,6 +9,22 @@ export default function Manage(props) {
   const [newPm2Config, setNewPm2Config] = useState('');
   const [newDotEnv, setNewDotEnv] = useState('');
 
+  const { data: buildStatus, refetch: getBuildStatus } = useQuery('getBuildStatus',
+    () => axios.get('/api/getBuildStatus').then(({ data }) => {
+      console.log(data);
+      return data
+
+    }).catch(e => {
+      console.log(e);
+    }),
+    {
+      enabled: true,
+      refetchOnWindowFocus: false,
+      refetchInterval: 300,
+      refetchIntervalInBackground: true,
+    }
+  )
+
   const { status: getConfigStatus, data: config, refetch: getConfig } = useQuery('getBuildConfig',
     () => axios.get('/api/getBuildConfig', { withCredentials: true }).then(({ data }) => {
       setNewPm2Config(data.pm2Config);
@@ -85,7 +101,6 @@ export default function Manage(props) {
         </div>
         <button
           onClick={() => {
-            console.log(newDotEnv);
             axios.post('/api/setBuildConfig', { newPm2Config, newDotEnv }).then(({ data }) => {
               if (data.isSetBuildConfigSuccess === true) {
                 alert('update complete!');
@@ -99,6 +114,9 @@ export default function Manage(props) {
         }}>
           build
         </button>
+        <p>
+          {buildStatus?.log}
+        </p>
       </>
     )
   } else if (loginCheckStatus === 'success' && isSilentRefreshSuccess === false) {
