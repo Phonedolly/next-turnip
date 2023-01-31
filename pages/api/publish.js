@@ -14,12 +14,12 @@ export default async function handler(req, res) {
   const checkLogin = await isLoggedIn(req)
     .catch((e) => {
       console.error(e)
-      res.status(500).send({ isLoggedIn: false })
       return false
     })
   if (checkLogin === false) {
-    return
+    return res.status(500).send({ isLoggedIn: false })
   }
+
 
   /* Connect MongoDB */
   await dbConnect();

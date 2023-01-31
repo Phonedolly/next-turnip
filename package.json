@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p ${PORT-3000}",
     "lint": "next lint"
   },
   "dependencies": {
@@ -17,6 +17,7 @@
     "axios": "^1.2.2",
     "cookie-parser": "^1.4.6",
     "cookies-next": "^2.1.1",
+    "crocket": "^1.0.15",
     "cross-env": "^7.0.3",
     "date-fns-tz": "^1.3.7",
     "dotenv": "^16.0.3",
