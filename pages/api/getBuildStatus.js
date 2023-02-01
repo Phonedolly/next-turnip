@@ -19,16 +19,18 @@ export default async function handler(req, res) {
     client.connect({ path: "/tmp/next-turnip.sock" }, (err) => {
       // Connection errors are supplied as the first parameter to callback
       if (err) {
-        reject(err);
+        return reject(err);
       }
       console.log("IPC Connected");
       // Instantly a message to the server
-      client.emit("/request/getBuildStatus", { projectName: process.env.BLOG_NAME.toLowerCase() });
+      client.emit("/request/getBuildStatus", { projectName: process.env.BLOG_NAME.toLowerCase() }, ()=>{
+        console.log('Serverless sends getBuildStatus Request')
+      });
     });
 
     client.on('/response/getBuildStatus', (payload) => {
       client.close();
-      resolve(payload);
+      return resolve(payload);
     })
   });
 

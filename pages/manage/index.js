@@ -8,20 +8,35 @@ export default function Manage(props) {
   const router = useRouter();
   const [newPm2Config, setNewPm2Config] = useState('');
   const [newDotEnv, setNewDotEnv] = useState('');
+  const [isBuilding, setIsBuilding] = useState(false);
+  const [isBuildFinished, setIsBuildFinished] = useState(false);
+  const [isBuildSuccess, setIsBuildSuccess] = useState(true);
 
   const { data: buildStatus, refetch: getBuildStatus } = useQuery('getBuildStatus',
     () => axios.get('/api/getBuildStatus').then(({ data }) => {
+      if (data.isBuildFinished === true) {
+        setIsBuilding(false);
+        setIsBuildFinished(true);
+        if (data.isBuildSuccess === true) {
+          setIsBuildSuccess(true)
+        } else {
+          setIsBuildSuccess(false);
+        }
+      } else if (data.isBuildFinished === false && data.log.length > 0) {
+        setIsBuilding(true);
+      }
       console.log(data);
       return data
 
     }).catch(e => {
-      console.log(e);
+      console.log('Build status is not available');
     }),
     {
-      enabled: true,
+      enabled: isBuildFinished === false,
       refetchOnWindowFocus: false,
       refetchInterval: 300,
       refetchIntervalInBackground: true,
+      retryDelay: 1000,
     }
   )
 
@@ -108,15 +123,17 @@ export default function Manage(props) {
             })
           }}>update config</button>
         <button onClick={() => {
+          setIsBuilding(true);
           axios.get('/api/startBuild').then(({ data }) => {
             console.log(data);
+            setIsBuildFinished(false);
           })
         }}>
           build
         </button>
-        <p>
-          {buildStatus?.log}
-        </p>
+        <textarea value={buildStatus?.log || undefined}
+          style={{ width: "50vw", height: "80vh" }} />
+        {isBuildFinished === true ? isBuildSuccess ? "Build Finished!" : "Build Failed!" : (isBuilding === true ? "Building..." : null)}
       </>
     )
   } else if (loginCheckStatus === 'success' && isSilentRefreshSuccess === false) {
