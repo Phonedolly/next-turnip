@@ -27,5 +27,14 @@ module.exports = {
     additionalSitemaps: [
       `${process.env.SITE_URL || 'http://127.0.0.1:3000'}/server-sitemap.xml`
     ]
+  },
+  transform: async (config, path) => {
+    return {
+      loc: path,
+      changefreq: 'hourly',
+      priority: 1.0,
+      lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
+      alternateRefs: config.alternateRefs ?? [],
+    }
   }
 }
