@@ -25,11 +25,9 @@ export default async function handler(req, res) {
   await dbConnect();
 
   const isPostExists = !!await Post.findOne({ title: req.body.title });
-  if (isPostExists) {
+  if (isPostExists && req.body.isEdit === false) {
     return res.status(500).send({ isPublishSuccess: false, reason: "Post Title Duplicated" });
   }
-
-  console.log(req.body)
   const thisCategoryExists = !! await Category.findOne({ _id: req.body.category._id });
   if (!thisCategoryExists) {
     return res.status(500).send({ isPublishSuccess: false, reason: "This category don't exists" });
@@ -50,7 +48,7 @@ export default async function handler(req, res) {
         console.log('쓰지 않는 사진 삭제 성공')
         return true
       }, (err) => {
-        console.error(now() + '에러')
+        console.error(now() + '쓰지 않는 사진 삭제 에러')
         console.error(err)
 
         res.status(500).send({ isPublishSuccess: false, reason: "failed to delete blacklist" });
@@ -85,8 +83,6 @@ export default async function handler(req, res) {
       category: req.body.category
     })
   }
-
-  // TODO Implement Sitemap Update
 
   res.status(200).send({ isPublishSuccess: true })
 }

@@ -93,8 +93,8 @@ export default function Markdown(articleProps) {
             const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
             const metaWidth = metastring?.match(/{([^}]+)x/);
             const metaHeight = metastring?.match(/x([^}]+)}/);
-            const width = metaWidth ? metaWidth[1] : articleProps.imageSizes[`${image.properties.src}`].width
-            const height = metaHeight ? metaHeight[1] : articleProps.imageSizes[`${image.properties.src}`].height;
+            const width = metaWidth ? metaWidth[1] : (articleProps.imageSizes[`${image.properties.src}`]?.width || 1600);
+            const height = metaHeight ? metaHeight[1] : (articleProps.imageSizes[`${image.properties.src}`]?.height || 900);
             const isPriority = metastring?.toLowerCase().match('{priority}');
             const hasCaption = metastring?.toLowerCase().includes('{caption:');
             const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
@@ -125,8 +125,8 @@ export default function Markdown(articleProps) {
           const alt = metastring?.replace(/ *\{[^)]*\} */g, "");
           const metaWidth = metastring?.match(/{([^}]+)x/);
           const metaHeight = metastring?.match(/x([^}]+)}/);
-          const width = metaWidth ? metaWidth[1] : articleProps.imageSizes[`${image.properties.src}`]?.width;
-          const height = metaHeight ? metaHeight[1] : articleProps.imageSizes[`${image.properties.src}`]?.height;
+          const width = metaWidth ? metaWidth[1] : (articleProps.imageSizes[`${image.properties.src}`]?.width || 1600);
+          const height = metaHeight ? metaHeight[1] : (articleProps.imageSizes[`${image.properties.src}`]?.height || 900);
           const isPriority = metastring?.toLowerCase().match('{priority}');
           const hasCaption = metastring?.toLowerCase().includes('{caption:');
           const caption = metastring?.match(/{caption: (.*?)}/)?.pop();
